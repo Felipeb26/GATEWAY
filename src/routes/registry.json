@@ -1,0 +1,16 @@
+{
+	"services": {
+		"crud": {
+			"apiName": "crud",
+			"host": "http://localhost",
+			"port": 3000,
+			"url": "http://0.0.0.0:3000/"
+		},
+		"mail": {
+			"apiName": "messages",
+			"host": "http://localhost",
+			"port": 3003,
+			"url": "http://0.0.0.0:3003/"
+		}
+	}
+}
