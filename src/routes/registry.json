@@ -4,13 +4,19 @@
 			"apiName": "crud",
 			"host": "http://localhost",
 			"port": 3000,
-			"url": "http://0.0.0.0:3000/"
+			"url": "https://crud-a3.vercel.app/"
+		},
+		"consult": {
+			"apiName": "consult",
+			"host": "http://localhost",
+			"port": 3000,
+			"url": "https://consulta-a3.vercel.app/"
 		},
 		"mail": {
-			"apiName": "messages",
+			"apiName": "mail",
 			"host": "http://localhost",
 			"port": 3003,
-			"url": "http://0.0.0.0:3003/"
+			"url": "https://mail-a3.vercel.app/"
 		}
 	}
 }

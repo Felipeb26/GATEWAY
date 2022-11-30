@@ -83,8 +83,12 @@ app.get("/", (req, res) => {
 });
 
 //ports - host
-if (port.match("3000")) {
+if (new String(port).startsWith("3000")) {
 	port = port.replace("3000", "3001");
+}
+
+if (port == undefined || null) {
+	port = 3001;
 }
 
 app.listen(port, () => {

@@ -29,6 +29,8 @@ const path = __dirname;
 //paths
 var { reg, route } = require("./src/routes/gates.routes");
 
+console.log(`PATH: ${path}`)
+
 const crud = require(`${path}/views/img/crud.png`);
 const email = require(`${path}/views/img/message.png`);
 const logo = require(`${path}/views/img/logo.png`);
@@ -38,8 +40,8 @@ app.use(express.static(path));
 
 var crudIsGood;
 var emailIsGood;
-const urlC = "http://localhost:3000/";
-const urlE = "http://localhost:3003/";
+const urlC = "https://crud-a3.vercel.app/";
+const urlE = "https://mail-a3.vercel.app/";
 
 setInterval(() => {
 	(async function crudFunc() {
@@ -67,6 +69,7 @@ setInterval(() => {
 }, 15000);
 
 app.get("/main", async (req, res) => {
+	console.log(path)
 	setInterval(() => {
 		res.render("main.ejs", {
 			services: reg.services,
@@ -74,7 +77,7 @@ app.get("/main", async (req, res) => {
 			crudIsGood,
 			emailIsGood,
 		});
-	}, 16000);
+	}, 15000);
 });
 
 app.use("/", route);
@@ -83,8 +86,12 @@ app.get("/", (req, res) => {
 });
 
 //ports - host
-if (port.match("3000")) {
+if (new String(port).startsWith("3000")) {
 	port = port.replace("3000", "3001");
+}
+
+if(port == undefined || null){
+	port = 3001;
 }
 
 app.listen(port, () => {
