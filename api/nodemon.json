@@ -1,0 +1,5 @@
+{
+	"ext": "ejs, js, mjs, json",
+	"delay": 2500,
+	"path": "*.*"
+}
