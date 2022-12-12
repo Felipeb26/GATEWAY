@@ -9,92 +9,62 @@ const limiter = rateLimiter({
 	windowMs: 5000,
 });
 
-route.all("/:apiName/:path/:value", limiter, async (req, res) => {
+route.all("/:apiName/:path?/:value?", limiter, async (req, res) => {
 	try {
+		const { apiName, path, value } = req.params;
+		console.log(`API: ${apiName},CAMINHO: ${path},VALOR: ${value}`)
+		
 		if (reg.services[req.params.apiName]) {
-			let value = "/" + req.params.value;
-			value = value == undefined || value == null ? "" : value;
-			await axios({
-				method: req.method,
-				url:
-					reg.services[req.params.apiName].url +
-					req.params.path +
-					value,
-				data: req.body,
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: req.headers.authorization,
-				},
-			})
-				.then((data) => {
-					return res.status(data.status).send(data.data);
-				})
-				.catch((err) => {
-					let status = err.response.status;
-					status = status != null || undefined ? status : 400;
-					return res.status(status).send(err.response.data);
-				});
-		} else {
-			res.send({ message: "no service for this param" });
-		}
-	} catch (error) {
-		res.send({ erro: error.message });
-	}
-});
+			const auth = req.headers.authorization;
 
-route.all("/:apiName/:path", async (req, res) => {
-	try {
-		if (reg.services[req.params.apiName]) {
-			await axios({
-				url: reg.services[req.params.apiName].url + req.params.path,
-				method: req.method,
-				data: req.body,
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: req.headers.authorization,
-				},
-			})
-				.then((data) => {
-					return res.status(data.status).send(data.data);
-				})
-				.catch((err) => {
-					let status = err.response.status;
-					status = status != null || undefined ? status : 400;
-					return res.status(status).send(err.response.data);
-				});
-		} else {
-			res.send({ message: "no service for this param" });
-		}
-	} catch (error) {
-		res.send({ erro: error.message });
-	}
-});
+			let url = reg.services[apiName].url;
+			let headers;
 
-route.all("/:apiName/", limiter, async (req, res) => {
-	try {
-		if (reg.services[req.params.apiName]) {
+			if (typeof path === "string" && path.trim().length >= 0) {
+				url += path;
+			}
+			if (typeof value === "string" && value.trim().length >= 0) {
+				url += `/${value}`;
+			}
+			if (typeof auth === "string" && auth.trim().length >= 0) {
+				headers = {
+					"Accept": "application/json",
+					"Content-Type": "application/json;charset=UTF-8",
+					Authorization: auth,
+				};
+			} else {
+				headers = {
+					"Accept": "application/json",
+					"Content-Type": "application/json;charset=UTF-8",
+				};
+			}
+
 			await axios({
 				method: req.method,
-				url: reg.services[req.params.apiName].url,
+				url: url,
 				data: req.body,
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: req.headers.authorization,
-				},
+				headers: headers,
 			})
 				.then((data) => {
+					// console.log(data);
 					return res.status(data.status).send(data.data);
 				})
 				.catch((err) => {
-					let status = err.response.status;
-					status = status != null || undefined ? status : 400;
-					return res.status(status).send(err.response.data);
+					// console.log(err);
+					let erro = err.response.data;
+					if(!erro){
+						erro = err.message;
+					}
+					console.log(erro)
+					return res.status(err.response.status).send({erro:erro});
 				});
 		} else {
-			res.send({ message: "no service for this param" });
+			return res
+				.status(400)
+				.send({ message: "no service for this param" });
 		}
 	} catch (error) {
-		res.send({ erro: error.message });
+		return res.status(500).send({ erro: error.message });
 	}
 });
 
@@ -114,45 +84,7 @@ route.post("/register", async (req, res) => {
 	});
 });
 
-// var crudIsGood ;
-// var emailIsGood;
-
-const urlC = "http://localhost:3000/";
-const urlE = "http://localhost:3003";
-
-const crudFunc = async () => {
-	await axios({
-		url: urlC,
-		method: "GET",
-	})
-		.then((en) => {
-			return en;
-		})
-		.catch((err) => {
-			console.log(err.status);
-			return err;
-		});
-};
-
-const emailFunc = async () => {
-	axios({
-		url: urlE,
-		method: "GET",
-	})
-		.then((en) => {
-			return en;
-		})
-		.catch((err) => {
-			console.log(err.status);
-			return err;
-		});
-};
-
-// console.log(`Email ${emailIsGood}`, `Crud ${crudIsGood}`);
-
 module.exports = {
 	route,
 	reg,
-	crudFunc,
-	emailFunc,
 };
